@@ -1,0 +1,199 @@
+<!-- Main Container -->
+<div class="relative w-screen h-screen bg-dark-bg text-white overflow-hidden font-sans selection:bg-neon-blue selection:text-black">
+  
+  <!-- Background Ambient Glow (Optional decorative) -->
+  <div class="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-neon-purple/20 blur-[150px] rounded-full pointer-events-none z-0"></div>
+  <div class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-neon-blue/20 blur-[150px] rounded-full pointer-events-none z-0"></div>
+
+  <!-- Progress Bar -->
+  <div class="absolute top-0 left-0 w-full h-1.5 bg-gray-800 z-50">
+    <div 
+      class="h-full bg-gradient-to-r from-neon-purple to-neon-blue transition-all duration-500 ease-out shadow-[0_0_10px_#00f3ff]"
+      [style.width]="progressWidth()"
+    ></div>
+  </div>
+
+  <!-- Slider Track -->
+  <div 
+    class="flex w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] z-10"
+    [style.transform]="sliderTransform()"
+  >
+    <!-- Loop through slides -->
+    @for (slide of slides; track slide.id) {
+      <div class="w-full h-full flex-shrink-0 flex items-center justify-center p-8 md:p-16 box-border relative">
+        
+        <!-- Slide 1: Cover with Slower Cinematic Effects -->
+        @if (slide.type === 'cover') {
+          <div class="text-center max-w-5xl z-10" [class.animate-trigger]="currentSlideIndex() === slide.id">
+            <!-- Small Title: Slow Blur in effect -->
+            <h2 class="text-xl md:text-3xl text-neon-green tracking-[0.2em] mb-4 uppercase font-bold opacity-0"
+                [class.animate-blur-in-slow]="currentSlideIndex() === slide.id"
+                style="animation-delay: 0.2s">
+              {{ slide.title }}
+            </h2>
+            
+            <!-- Main Body: Typewriter effect (logic slowed in TS) -->
+            <h1 class="text-4xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-neon-blue to-white drop-shadow-[0_0_15px_rgba(0,243,255,0.5)] min-h-[1.5em] leading-tight">
+              {{ displayedTitle() }}<span class="text-neon-blue animate-cursor-blink" [class.hidden]="!isTyping()">|</span>
+            </h1>
+
+            <div class="mt-12 flex justify-center opacity-0"
+                 [class.animate-blur-in-slow]="currentSlideIndex() === slide.id"
+                 style="animation-delay: 1.5s">
+              <button (click)="next()" class="ripple group px-8 py-3 bg-transparent border border-neon-blue text-neon-blue rounded-full hover:bg-neon-blue hover:text-black transition-all duration-300 font-bold tracking-widest uppercase">
+                Bắt đầu khám phá
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Slide 2: Members with Slower Chaos Fly-in Effect -->
+        @if (slide.type === 'members') {
+          <div class="w-full max-w-6xl z-10 flex flex-col items-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)] opacity-0"
+                [class.animate-blur-in-slow]="currentSlideIndex() === slide.id"
+                style="animation-delay: 0.2s">
+              {{ slide.title }}
+            </h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 w-full">
+              @for (member of teamMembers; track member.name; let i = $index) {
+                <!-- Animation duration defined in config (3s) -->
+                <div class="group relative bg-dark-card/60 backdrop-blur-sm border border-white/10 p-4 rounded-xl flex items-center space-x-4 hover:bg-white/10 hover:border-neon-purple/50 transition-all duration-300 opacity-0"
+                     [class.animate-chaos-fly-in]="currentSlideIndex() === slide.id"
+                     [style]="member.style">
+                  <div class="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-neon-blue/30 group-hover:border-neon-blue group-hover:shadow-[0_0_15px_#00f3ff] transition-all duration-300 flex-shrink-0 relative">
+                     <img [src]="member.avatar" loading="lazy" width="64" height="64" class="w-full h-full object-cover" alt="Avatar">
+                  </div>
+                  <span class="text-lg md:text-xl font-semibold text-gray-200 group-hover:text-neon-blue transition-colors">
+                    {{ member.name }}
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Slides 3-8: Content with Modern Glass Slide-In -->
+        @if (slide.type === 'content') {
+          <div class="w-full max-w-7xl z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <!-- Text Content -->
+            <div class="order-2 md:order-1">
+              <h2 class="text-3xl md:text-5xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-green opacity-0"
+                  [class.animate-modern-slide]="currentSlideIndex() === slide.id"
+                  style="animation-delay: 0.2s">
+                {{ slide.title }}
+              </h2>
+              <!-- Use modern-slide for text body -->
+              <p class="text-lg md:text-2xl leading-relaxed text-gray-300 text-justify opacity-0"
+                 [class.animate-modern-slide]="currentSlideIndex() === slide.id"
+                 style="animation-delay: 0.5s">
+                {{ slide.body }}
+              </p>
+            </div>
+            
+            <!-- Image Content -->
+            <div class="order-1 md:order-2 flex justify-center opacity-0"
+                 [class.animate-modern-slide]="currentSlideIndex() === slide.id"
+                 style="animation-delay: 0.8s">
+              <div class="relative w-full aspect-video md:aspect-square max-h-[50vh] md:max-h-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] group bg-dark-card">
+                <div class="absolute inset-0 bg-gradient-to-tr from-neon-purple/20 to-transparent opacity-50 group-hover:opacity-20 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                @if (slide.image) {
+                   <img [src]="slide.image" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Slide Image">
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Slide 9: Video -->
+        @if (slide.type === 'video') {
+           <div class="w-full max-w-6xl z-10 flex flex-col items-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-green opacity-0"
+                [class.animate-modern-slide]="currentSlideIndex() === slide.id"
+                style="animation-delay: 0.2s">
+              {{ slide.title }}
+            </h2>
+            <div class="w-full aspect-video rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_50px_rgba(0,243,255,0.3)] bg-black opacity-0"
+                 [class.animate-modern-slide]="currentSlideIndex() === slide.id"
+                 style="animation-delay: 0.5s">
+               @if (currentSlideIndex() === slide.id) {
+                 <video controls class="w-full h-full object-contain">
+                   <source [src]="slide.video" type="video/mp4">
+                   Trình duyệt của bạn không hỗ trợ video.
+                 </video>
+               }
+            </div>
+          </div>
+        }
+
+        <!-- Slide 10: Thank You (FIXED: Clipping issue removed) -->
+        @if (slide.type === 'thankyou') {
+          <div class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+            <!-- Explosion Canvas (Optimized) -->
+            <canvas #explosionCanvas class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+            
+            <!-- Removed scale-125 which caused clipping. Adjusted widths and font sizes to compensate. -->
+            <div class="z-10 text-center p-6 md:p-12 bg-dark-bg/30 backdrop-blur-sm rounded-3xl border border-white/10 shadow-2xl w-[90%] max-w-5xl">
+              <h2 class="text-xl md:text-3xl text-neon-green tracking-[0.3em] mb-6 uppercase font-bold animate-pulse-slow">
+                {{ slide.title }}
+              </h2>
+              <h1 class="text-3xl md:text-5xl lg:text-7xl font-black text-white leading-snug drop-shadow-[0_0_25px_rgba(188,19,254,0.8)] break-words">
+                {{ slide.body }}
+              </h1>
+              <div class="mt-8 text-neon-blue text-4xl animate-bounce">
+                ❤️
+              </div>
+            </div>
+          </div>
+        }
+        
+      </div>
+    }
+  </div>
+
+  <!-- Navigation Controls (Fixed Overlay) -->
+  <div class="absolute inset-x-0 bottom-8 z-50 flex flex-col items-center pointer-events-none">
+    
+    <!-- Arrows -->
+    <div class="absolute top-1/2 -translate-y-1/2 left-4 md:left-8 pointer-events-auto" style="top: -40vh;">
+       <button (click)="prev()" 
+               [disabled]="isFirstSlide()"
+               class="ripple w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-md border border-white/20 text-white hover:bg-neon-blue hover:text-black hover:border-neon-blue disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed transition-all duration-300 group">
+         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 md:w-8 md:h-8 group-hover:-translate-x-1 transition-transform">
+           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+         </svg>
+       </button>
+    </div>
+
+    <div class="absolute top-1/2 -translate-y-1/2 right-4 md:right-8 pointer-events-auto" style="top: -40vh;">
+      <button (click)="next()" 
+              [disabled]="isLastSlide()"
+              class="ripple w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-md border border-white/20 text-white hover:bg-neon-blue hover:text-black hover:border-neon-blue disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed transition-all duration-300 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 md:w-8 md:h-8 group-hover:translate-x-1 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Dots Indicator -->
+    <div class="flex space-x-3 pointer-events-auto mt-auto">
+      @for (slide of slides; track slide.id) {
+        <button (click)="goTo(slide.id)"
+                class="w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300 focus:outline-none"
+                [class.bg-neon-blue]="currentSlideIndex() === slide.id"
+                [class.scale-125]="currentSlideIndex() === slide.id"
+                [class.shadow-[0_0_10px_#00f3ff]]="currentSlideIndex() === slide.id"
+                [class.bg-gray-600]="currentSlideIndex() !== slide.id"
+                [class.hover:bg-gray-400]="currentSlideIndex() !== slide.id">
+        </button>
+      }
+    </div>
+  </div>
+  
+  <!-- Slide number indicator (bottom right decorative) -->
+  <div class="absolute bottom-4 right-6 text-gray-500 font-mono text-sm z-40">
+    SLIDE {{ currentSlideIndex() + 1 }} / {{ slides.length }}
+  </div>
+
+</div>
